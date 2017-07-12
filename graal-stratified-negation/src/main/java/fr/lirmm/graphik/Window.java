@@ -71,13 +71,16 @@ public class Window extends JFrame {
 	StronglyConnectedComponentsGraph<Rule> scc;
 	Graph sccDisp;
 
+	private boolean master;
 
-	public Window()
+	public Window(boolean master)
 	{
 		/* Initialize the Window */
 
 		super();
 
+		this.master = master;
+		
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Dependencies Viewer");
 		setName("Dependencies Viewer");
@@ -224,10 +227,10 @@ public class Window extends JFrame {
 		this.displayZone = new JTextArea();
 	}
 
-	public Window(DefaultLabeledGraphOfRuleDependencies g)
+	public Window(DefaultLabeledGraphOfRuleDependencies g , boolean master)
 	{
 		/* Initialize the Window */
-		this();
+		this(master);
 
 		this.grd = g;
 		this.grdDisp = null;
@@ -275,7 +278,8 @@ public class Window extends JFrame {
 	public void fermer()
 	{
 		dispose();
-		System.exit(0);
+		if(master)
+			System.exit(0);
 	}
 
 
@@ -354,7 +358,7 @@ public class Window extends JFrame {
 			clearDrawZone();
 
 			if(this.grdDisp == null)
-				this.grdDisp = DefaultGraphOfRuleDependenciesViewer.instance().getGraph(this.grd);
+				this.grdDisp = DefaultGraphOfRuleDependenciesViewer.instance().getGraph(grd);
 		
 			this.infoNode.setText("Rules : " + grd.getNodeCount() + " | Edges : " + grd.getEdgeCount());
 			if(grd.hasCircuitWithNegativeEdge())
@@ -378,7 +382,7 @@ public class Window extends JFrame {
 					if(n != null)
 					{
 						System.out.println("Node : " + n.label);
-						infoNode.setText(grdDisp.getNode(n.label).getAttribute("rule"));
+						infoNode.setText(grdDisp.getNode(n.label).getAttribute("rule") + "Class : " + grdDisp.getNode(n.label).getAttribute("ui.class"));
 					}
 					else
 						infoNode.setText("Rules : " + grd.getNodeCount() + " | Edges : " + grd.getEdgeCount());
@@ -518,7 +522,7 @@ public class Window extends JFrame {
 						Set<Rule> s = scc.getComponent(Integer.parseInt(n.label.replaceAll("C", "")));
 						System.out.println(s);
 						//DefaultGraphOfRuleDependenciesViewer.instance().display(grd.getSubGraph(s));
-						Window w = new Window((DefaultLabeledGraphOfRuleDependencies)((DefaultLabeledGraphOfRuleDependencies)grd).getSubGraph(s));
+						Window w = new Window((DefaultLabeledGraphOfRuleDependencies)((DefaultLabeledGraphOfRuleDependencies)grd).getSubGraph(s) , false);
 					}
 					else
 						infoNode.setText("Strongly Connected Components : " + sccDisp.getNodeCount() + " | Edges : " + sccDisp.getEdgeCount());

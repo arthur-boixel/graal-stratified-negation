@@ -264,6 +264,24 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 		return false;
 	}
 	
+	public ArrayList<List<Rule>> getBadCircuits()
+	{
+		ArrayList<List<Rule>> l = new ArrayList<>();
+		
+		hasCircuit();
+		if(!hasCircuitWithNegativeEdge())
+			return null;
+		
+		for(List<Rule> c : circuits)
+		{
+			if(containsNegativeEdge(c))
+			{
+				l.add(c);
+			}
+		}
+		
+		return l;
+	}
 	
 	public String toString() {
 		

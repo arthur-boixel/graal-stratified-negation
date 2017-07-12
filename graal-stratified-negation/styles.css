@@ -1,31 +1,33 @@
 node {
 	shape: circle;
-	fill-color: purple;
+	fill-color: green;
 	text-color: black;
 	text-mode : normal;
 	text-size : 15px;
 	stroke-mode: plain;
-	stroke-color: purple;
+	stroke-color: green;
 	stroke-width: 2px;
 	size-mode : fit;
 	text-background-mode : rounded-box;
 	text-background-color : orange;
 }
 
-node.rouge {
-	fill-color : red;
-}
-node.neg {
-	fill-color : yellow;
-}
-
-node:clicked {
+node.bad {
+	shape: circle;
+	fill-color: red;
+	text-color: black;
 	text-mode : normal;
+	text-size : 15px;
+	stroke-mode: plain;
+	stroke-color: red;
+	stroke-width: 2px;
+	size-mode : fit;
+	text-background-mode : rounded-box;
+	text-background-color : orange;
 }
 
 edge.plus {
 	fill-color: black;
-
 }
 
 edge.moins {

@@ -1,5 +1,6 @@
 package fr.lirmm.graphik;
 
+import java.util.List;
 import java.util.Set;
 
 import org.graphstream.graph.Edge;
@@ -9,6 +10,7 @@ import org.graphstream.graph.implementations.SingleGraph;
 
 import fr.lirmm.graphik.graal.api.core.GraphOfRuleDependencies;
 import fr.lirmm.graphik.graal.api.core.Rule;
+import fr.lirmm.graphik.graal.core.grd.DefaultGraphOfRuleDependencies;
 import fr.lirmm.graphik.util.graph.scc.StronglyConnectedComponentsGraph;
 
 public class DefaultGraphOfRuleDependenciesViewer {
@@ -27,28 +29,39 @@ public class DefaultGraphOfRuleDependenciesViewer {
 	public Graph getGraph(GraphOfRuleDependencies g)
 	{
 		Graph graphDisp = new SingleGraph("Graph Of Rules Dependencies");
-		computeVertex(g.getRules() , graphDisp);
+		computeVertex(g , graphDisp);
 		addDependencies(g , graphDisp);
 		
 		graphDisp.addAttribute("ui.stylesheet", "node {\n" + 
 				"	shape: circle;\n" + 
-				"	fill-color: purple;\n" + 
+				"	fill-color: green;\n" + 
 				"	text-color: black;\n" + 
 				"	text-mode : normal;\n" + 
 				"	text-size : 15px;\n" + 
-				"	size-mode : fit;\n" +
+				"	stroke-mode: plain;\n" + 
+				"	stroke-color: green;\n" + 
+				"	stroke-width: 2px;\n" + 
+				"	size-mode : fit;\n" + 
+				"	text-background-mode : rounded-box;\n" + 
+				"	text-background-color : green;\n" +
 				"}\n" + 
 				"\n" + 
-				"node.rouge {\n" + 
-				"	fill-color : red;\n" + 
-				"}\n" + 
-				"node.neg {\n" + 
-				"	fill-color : yellow;\n" + 
+				"node.bad {\n" + 
+				"	shape: circle;\n" + 
+				"	fill-color: red;\n" + 
+				"	text-color: black;\n" + 
+				"	text-mode : normal;\n" + 
+				"	text-size : 15px;\n" + 
+				"	stroke-mode: plain;\n" + 
+				"	stroke-color: red;\n" + 
+				"	stroke-width: 2px;\n" + 
+				"	size-mode : fit;\n" + 
+				"	text-background-mode : rounded-box;\n" +
+				"	text-background-color : red;\n" +
 				"}\n" + 
 				"\n" + 
 				"edge.plus {\n" + 
 				"	fill-color: black;\n" + 
-				"\n" + 
 				"}\n" + 
 				"\n" + 
 				"edge.moins {\n" + 
@@ -65,6 +78,9 @@ public class DefaultGraphOfRuleDependenciesViewer {
 	public Graph getSCCGraph(GraphOfRuleDependencies graph) {
 		StronglyConnectedComponentsGraph<Rule> sccGraph = graph.getStronglyConnectedComponentsGraph();
 		Graph graphDisp = new SingleGraph("Graph of Strongly Connected Components");
+		
+		
+		
 		
 		for(int i = 0 ; i < sccGraph.getNbrComponents() ; i++)
 		{
@@ -84,7 +100,7 @@ public class DefaultGraphOfRuleDependenciesViewer {
 					
 					for(Rule dest : ((DefaultLabeledGraphOfRuleDependencies) graph).getInhibitedRules(src))
 					{
-						if(s.contains(dest) && graphDisp.getEdge(edgeID) == null)
+						if(s.contains(dest) && graphDisp.getEdge(edgeID) == null && i != j)
 						{
 							Edge e = graphDisp.addEdge(edgeID.toString(),
 									"C" + i,
@@ -98,7 +114,7 @@ public class DefaultGraphOfRuleDependenciesViewer {
 					
 					for(Rule dest : graph.getTriggeredRules(src))
 					{
-						if(s.contains(dest) && graphDisp.getEdge(edgeID) == null)
+						if(s.contains(dest) && graphDisp.getEdge(edgeID) == null && i != j)
 						{
 							Edge e = graphDisp.addEdge(edgeID.toString(),
 									"C" + i,
@@ -115,23 +131,34 @@ public class DefaultGraphOfRuleDependenciesViewer {
 		
 		graphDisp.addAttribute("ui.stylesheet", "node {\n" + 
 				"	shape: circle;\n" + 
-				"	fill-color: purple;\n" + 
+				"	fill-color: green;\n" + 
 				"	text-color: black;\n" + 
 				"	text-mode : normal;\n" + 
 				"	text-size : 15px;\n" + 
-				"	size-mode : fit;\n" +
+				"	stroke-mode: plain;\n" + 
+				"	stroke-color: green;\n" + 
+				"	stroke-width: 2px;\n" + 
+				"	size-mode : fit;\n" + 
+				"	text-background-mode : rounded-box;\n" +
+				"	text-background-color : green;\n" +
 				"}\n" + 
 				"\n" + 
-				"node.rouge {\n" + 
-				"	fill-color : red;\n" + 
-				"}\n" + 
-				"node.neg {\n" + 
-				"	fill-color : yellow;\n" + 
+				"node.bad {\n" + 
+				"	shape: circle;\n" + 
+				"	fill-color: red;\n" + 
+				"	text-color: black;\n" + 
+				"	text-mode : normal;\n" + 
+				"	text-size : 15px;\n" + 
+				"	stroke-mode: plain;\n" + 
+				"	stroke-color: red;\n" + 
+				"	stroke-width: 2px;\n" + 
+				"	size-mode : fit;\n" + 
+				"	text-background-mode : rounded-box;\n" +
+				"	text-background-color : red;\n" + 
 				"}\n" + 
 				"\n" + 
 				"edge.plus {\n" + 
 				"	fill-color: black;\n" + 
-				"\n" + 
 				"}\n" + 
 				"\n" + 
 				"edge.moins {\n" + 
@@ -139,13 +166,42 @@ public class DefaultGraphOfRuleDependenciesViewer {
 				"	text-color : blue;\n" + 
 				"}");
 		
+		
+		List<List<Rule>> l = ((DefaultLabeledGraphOfRuleDependencies)graph).getBadCircuits();
+		
+		if(l != null)
+		{
+			boolean touch;
+			
+			for(int i = 0 ; i < sccGraph.getNbrComponents() ; i++)
+			{
+				touch = false;
+				for(List<Rule> c : l)
+				{
+					for(Rule r : c)
+					{
+						if(sccGraph.getComponent(i).contains(r))
+						{
+							graphDisp.getNode("C" + i).addAttribute("ui.class", "bad");
+							touch = true;
+							break;
+						}
+					}
+					
+					if(touch)
+						break;
+				}
+			}
+			
+		}
+		
 		return graphDisp;
 	}
 	
 	public void display(GraphOfRuleDependencies g)
 	{
 		Graph graphDisp = new SingleGraph("Graph Of Rules Dependencies");
-		computeVertex(g.getRules() , graphDisp);
+		computeVertex(g , graphDisp);
 		addDependencies(g , graphDisp);
 
 	    System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
@@ -156,13 +212,28 @@ public class DefaultGraphOfRuleDependenciesViewer {
 		graphDisp.display();			
 	}
 	
-	private void computeVertex(Iterable<Rule> rules , Graph graphDisp)
+	private void computeVertex(GraphOfRuleDependencies g , Graph graphDisp)
 	{
-		for(Rule r : rules)
+		for(Rule r : g.getRules())
 		{
 			Node n = graphDisp.addNode(r.getLabel());
 			n.addAttribute("label", r.getLabel());
 			n.addAttribute("rule", r.toString());
+		}
+		
+		List<List<Rule>> l = ((DefaultLabeledGraphOfRuleDependencies)g).getBadCircuits();
+		
+		if(l != null)
+		{
+			for(List<Rule> c : l)
+			{
+				for(Rule r : c)
+				{
+					System.out.println("Bad : " + r + " ||| Node : " + graphDisp.getNode(r.getLabel()));
+					graphDisp.getNode(r.getLabel()).addAttribute("ui.class", "bad");
+					System.out.println("class " + graphDisp.getNode(r.getLabel()).getAttribute("ui.class"));
+				}
+			}
 		}
 	}
 	
