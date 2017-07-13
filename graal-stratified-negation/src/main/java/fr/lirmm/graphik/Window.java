@@ -35,7 +35,12 @@ import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.Units;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 
+import fr.lirmm.graphik.graal.api.core.AtomSet;
 import fr.lirmm.graphik.graal.api.core.Rule;
+import fr.lirmm.graphik.graal.api.forward_chaining.ChaseException;
+import fr.lirmm.graphik.graal.api.kb.KnowledgeBase;
+import fr.lirmm.graphik.graal.forward_chaining.SccChase;
+import fr.lirmm.graphik.graal.kb.KBBuilder;
 import fr.lirmm.graphik.util.graph.scc.StronglyConnectedComponentsGraph;
 
 public class Window extends JFrame {
@@ -51,10 +56,12 @@ public class Window extends JFrame {
 	JMenuItem grdVisu;
 	JMenuItem sccText;
 	JMenuItem sccVisu;
+	JMenuItem forwardChaining;
 	JMenu saveMenu;
 	JMenuItem saveRules;
 	JMenuItem saveGRD;
 	JMenuItem saveSCC;
+	JMenuItem saveFC;
 
 	View view;
 	JScrollPane scroll;
@@ -69,6 +76,8 @@ public class Window extends JFrame {
 
 	StronglyConnectedComponentsGraph<Rule> scc;
 	Graph sccDisp;
+	
+	SccChase<AtomSet> chase;
 
 	private boolean master;
 
@@ -163,6 +172,14 @@ public class Window extends JFrame {
 			}
 		});
 		toolMenu.add(sccVisu);
+		
+		forwardChaining = new JMenuItem("Forward Chaining");
+		forwardChaining.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				launchForwardChaining();
+			}
+		});
+		toolMenu.add(forwardChaining);
 
 		menu.add(toolMenu);
 
@@ -196,6 +213,16 @@ public class Window extends JFrame {
 			}
 		});
 		saveMenu.add(saveSCC);
+		
+		saveFC = new JMenuItem("Save Forward Chaining");
+		saveFC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				exportFC();		
+			}
+		});
+		saveMenu.add(saveFC);
+		
+		
 		menu.add(saveMenu);
 
 
@@ -554,6 +581,53 @@ public class Window extends JFrame {
 		}
 	}
 
+	
+	public void launchForwardChaining()
+	{
+		if(this.grd != null)
+		{
+			if(!this.grd.hasCircuitWithNegativeEdge())
+			{
+				JFileChooser c = new JFileChooser(".");
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("DLGP files", "dlgp");
+				c.setFileFilter(filter);
+				c.setDialogTitle("Open a Facts Base");
+				int returnVal = c.showOpenDialog(this);
+
+				if(returnVal == JFileChooser.APPROVE_OPTION)
+				{	
+					this.clearDrawZone();
+				
+					KBBuilder kbb = new KBBuilder();
+					Utils.readKB(kbb, null, c.getSelectedFile().getAbsolutePath());
+				
+					KnowledgeBase kb = kbb.build();
+					System.out.println("Before : " + kb.getFacts());
+					this.chase = new SccChase<AtomSet>(grd, kb.getFacts());
+					try {
+						this.chase.execute();
+					} catch (ChaseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					this.displayZone.setText(Utils.displayFacts(kb.getFacts()));
+					this.displayZone.setCaretPosition(0);
+					this.scroll = new JScrollPane(this.displayZone);
+					this.add(this.scroll , BorderLayout.CENTER);
+					this.pack();
+				}
+			}
+			else
+			{
+				this.infoNode.setText(this.infoNode.getText() + " | Impossible, the rules are not stratifiable");
+				
+				this.pack();
+				
+				
+			}
+		}
+	}
 
 	public void exportRules()
 	{
@@ -634,7 +708,65 @@ public class Window extends JFrame {
 		}
 	}
 
+	public void exportFC()
+	{
+		if(this.grd != null)
+		{
+			if(!this.grd.hasCircuitWithNegativeEdge())
+			{
+				/* Computation */
+				JFileChooser c = new JFileChooser(".");
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("DLGP files", "dlgp");
+				c.setFileFilter(filter);
+				c.setDialogTitle("Open a Facts Base");
+				int returnVal = c.showOpenDialog(this);
 
+				if(returnVal == JFileChooser.APPROVE_OPTION)
+				{	
+					KBBuilder kbb = new KBBuilder();
+					Utils.readKB(kbb, null, c.getSelectedFile().getAbsolutePath());
+				
+					KnowledgeBase kb = kbb.build();
+					System.out.println("Before : " + kb.getFacts());
+					this.chase = new SccChase<AtomSet>(grd, kb.getFacts());
+					try {
+						this.chase.execute();
+					} catch (ChaseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					/* Exportation */
+					c = new JFileChooser(".");
+					c.setFileFilter(filter);
+					c.setDialogTitle("Export Saturated Facts Base");
+					returnVal = c.showOpenDialog(this);
+
+					if(returnVal == JFileChooser.APPROVE_OPTION)
+					{	
+						try {
+							FileWriter fw = new FileWriter(c.getSelectedFile());
+							fw.write(Utils.displayFacts(kb.getFacts()));
+							fw.close();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			else
+			{
+				this.infoNode.setText(this.infoNode.getText() + " | Impossible, the rules are not stratifiable");
+				
+				this.pack();
+				
+				
+			}
+		}
+	}
+	
+	
 	public void clearDrawZone()
 	{
 		if(this.view != null)
