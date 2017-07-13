@@ -35,7 +35,6 @@ import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.Units;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 
-import fr.lirmm.graphik.graal.api.core.GraphOfRuleDependencies;
 import fr.lirmm.graphik.graal.api.core.Rule;
 import fr.lirmm.graphik.util.graph.scc.StronglyConnectedComponentsGraph;
 
@@ -521,8 +520,8 @@ public class Window extends JFrame {
 						
 						Set<Rule> s = scc.getComponent(Integer.parseInt(n.label.replaceAll("C", "")));
 						System.out.println(s);
-						//DefaultGraphOfRuleDependenciesViewer.instance().display(grd.getSubGraph(s));
-						Window w = new Window((DefaultLabeledGraphOfRuleDependencies)((DefaultLabeledGraphOfRuleDependencies)grd).getSubGraph(s) , false);
+						
+						new Window((DefaultLabeledGraphOfRuleDependencies)((DefaultLabeledGraphOfRuleDependencies)grd).getSubGraph(s) , false);
 					}
 					else
 						infoNode.setText("Strongly Connected Components : " + sccDisp.getNodeCount() + " | Edges : " + sccDisp.getEdgeCount());
