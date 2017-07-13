@@ -264,6 +264,33 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 		return false;
 	}
 	
+	public Iterable<DefaultDirectedLabeledEdge> getBadEdges(List<Rule> circuit)
+	{
+		ArrayList<DefaultDirectedLabeledEdge> l = new ArrayList<>();
+		
+		for(int i = 0 ; i < circuit.size()-1 ; i++) { // Following the circuit
+			
+			for(DefaultDirectedLabeledEdge e : this.graph.outgoingEdgesOf(circuit.get(i))) {
+				
+				if(e.getHead() == ((DefaultRuleWithNegation)circuit.get(i+1)).getIndice()) { // Wanted edge found
+					l.add(e);					
+					break;
+				}
+			} 		
+		}
+		
+		int i = circuit.size()-1;
+		for(DefaultDirectedLabeledEdge e : this.graph.outgoingEdgesOf(circuit.get(i))) {
+			
+			if(e.getHead() == ((DefaultRuleWithNegation)circuit.get(0)).getIndice()) { // Wanted edge found
+				l.add(e);					
+				break;
+			}
+		} 	
+		
+		return l;
+	}
+	
 	public ArrayList<List<Rule>> getBadCircuits()
 	{
 		ArrayList<List<Rule>> l = new ArrayList<>();

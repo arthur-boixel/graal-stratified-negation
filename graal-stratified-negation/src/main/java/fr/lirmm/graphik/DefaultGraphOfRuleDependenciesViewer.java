@@ -1,5 +1,6 @@
 package fr.lirmm.graphik;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -60,14 +61,18 @@ public class DefaultGraphOfRuleDependenciesViewer {
 				"	text-background-color : red;\n" +
 				"}\n" + 
 				"\n" + 
-				"edge.plus {\n" + 
-				"	fill-color: black;\n" + 
-				"}\n" + 
-				"\n" + 
-				"edge.moins {\n" + 
-				"	fill-color : red;\n" + 
-				"	text-color : blue;\n" + 
-				"}");
+				"edge {\n" +
+				"   fill-color : black;\n" +
+				"   text-color : black;\n" +
+				"}\n" +
+				"\n" +
+ 				"edge.bad {\n" + 
+				"	fill-color : red;\n" +  
+				"}\n" +
+				"\n" +
+				"edge.moins {\n" +
+				"   fill-color : orange;\n" +
+				"}\n");
 		
 		graphDisp.addAttribute("ui.quality");
 		graphDisp.addAttribute("ui.antialias");
@@ -80,7 +85,7 @@ public class DefaultGraphOfRuleDependenciesViewer {
 		Graph graphDisp = new SingleGraph("Graph of Strongly Connected Components");
 		
 		
-		
+		/* Vertices */
 		
 		for(int i = 0 ; i < sccGraph.getNbrComponents() ; i++)
 		{
@@ -89,6 +94,8 @@ public class DefaultGraphOfRuleDependenciesViewer {
 			n.addAttribute("c", sccGraph.getComponent(i).toString());
 		}
 		
+		
+		/* Edges */
 		for(int i = 0 ; i < sccGraph.getNbrComponents() ; i++)
 		{
 			for(Rule src : sccGraph.getComponent(i))
@@ -129,6 +136,37 @@ public class DefaultGraphOfRuleDependenciesViewer {
 			}
 		}
 		
+		/* Colors on vertices */
+		List<List<Rule>> l = ((DefaultLabeledGraphOfRuleDependencies)graph).getBadCircuits();
+		
+		if(l != null)
+		{
+			boolean touch;
+			
+			for(int i = 0 ; i < sccGraph.getNbrComponents() ; i++)
+			{
+				touch = false;
+				for(List<Rule> c : l)
+				{
+					for(Rule r : c)
+					{
+						if(sccGraph.getComponent(i).contains(r))
+						{
+							graphDisp.getNode("C" + i).addAttribute("ui.class", "bad");
+							touch = true;
+							break;
+						}
+					}
+					
+					if(touch)
+						break;
+				}
+			}
+		}
+		
+		
+		
+		/* Style */
 		graphDisp.addAttribute("ui.stylesheet", "node {\n" + 
 				"	shape: circle;\n" + 
 				"	fill-color: green;\n" + 
@@ -157,43 +195,16 @@ public class DefaultGraphOfRuleDependenciesViewer {
 				"	text-background-color : red;\n" + 
 				"}\n" + 
 				"\n" + 
-				"edge.plus {\n" + 
-				"	fill-color: black;\n" + 
+				"edge {\n" + 
+				"	fill-color: black;\n" +
+				"   text-color: black;\n" +
 				"}\n" + 
 				"\n" + 
 				"edge.moins {\n" + 
-				"	fill-color : red;\n" + 
-				"	text-color : blue;\n" + 
+				"	fill-color : orange;\n" +  
 				"}");
 		
 		
-		List<List<Rule>> l = ((DefaultLabeledGraphOfRuleDependencies)graph).getBadCircuits();
-		
-		if(l != null)
-		{
-			boolean touch;
-			
-			for(int i = 0 ; i < sccGraph.getNbrComponents() ; i++)
-			{
-				touch = false;
-				for(List<Rule> c : l)
-				{
-					for(Rule r : c)
-					{
-						if(sccGraph.getComponent(i).contains(r))
-						{
-							graphDisp.getNode("C" + i).addAttribute("ui.class", "bad");
-							touch = true;
-							break;
-						}
-					}
-					
-					if(touch)
-						break;
-				}
-			}
-			
-		}
 		
 		return graphDisp;
 	}
@@ -273,6 +284,22 @@ public class DefaultGraphOfRuleDependenciesViewer {
 							);
 					e.setAttribute("label", '-');
 					e.addAttribute("ui.class", "moins");
+				}
+			}
+		}
+		
+		/* Colors on edges */
+		List<List<Rule>> l = ((DefaultLabeledGraphOfRuleDependencies)g).getBadCircuits();
+		
+		if(l != null)
+		{
+			for(List<Rule> c : l)
+			{
+				
+				for(DefaultDirectedLabeledEdge e : ((DefaultLabeledGraphOfRuleDependencies)g).getBadEdges(c))
+				{
+					if(graphDisp.getEdge(e.getFirst() + "|" + e.getSecond()).getAttribute("ui.class").toString().compareTo("moins") == 0)
+						graphDisp.getEdge(e.getFirst() + "|" + e.getSecond()).addAttribute("ui.class", "bad" );
 				}
 			}
 		}
