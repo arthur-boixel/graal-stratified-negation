@@ -417,7 +417,6 @@ public class Window extends JFrame {
 				public void mouseExited(MouseEvent e) {}
 				public void mouseEntered(MouseEvent e) {}
 				public void mouseClicked(MouseEvent e) {
-					System.out.println("Click ! " + (e.getX()/view.getCamera().getMetrics().ratioPx2Gu) + "," + (e.getY()/view.getCamera().getMetrics().ratioPx2Gu));
 					GraphicElement n = view.findNodeOrSpriteAt(e.getX(), e.getY()+menu.getMaximumSize().getHeight());
 					if(n != null)
 					{
@@ -425,7 +424,13 @@ public class Window extends JFrame {
 						infoNode.setText(grdDisp.getNode(n.label).getAttribute("rule") + "Class : " + grdDisp.getNode(n.label).getAttribute("ui.class"));
 					}
 					else
+					{
 						infoNode.setText("Rules : " + grd.getNodeCount() + " | Edges : " + grd.getEdgeCount());
+						if(grd.hasCircuitWithNegativeEdge())
+							infoNode.setText(infoNode.getText() + " | Not stratifiable");
+						else
+							infoNode.setText(infoNode.getText() + " | Stratifiable");
+					}
 				}
 			});
 
@@ -552,11 +557,10 @@ public class Window extends JFrame {
 				public void mouseExited(MouseEvent e) {}
 				public void mouseEntered(MouseEvent e) {}
 				public void mouseClicked(MouseEvent e) {
-					System.out.println("Click ! " + (e.getX()/view.getCamera().getMetrics().ratioPx2Gu) + "," + (e.getY()/view.getCamera().getMetrics().ratioPx2Gu));
+					
 					GraphicElement n = view.findNodeOrSpriteAt(e.getX(), e.getY()+menu.getMaximumSize().getHeight());
 					if(n != null)
 					{
-						System.out.println("Node : " + n.label);
 						infoNode.setText(sccDisp.getNode(n.label).getAttribute("c"));
 						
 						Set<Rule> s = scc.getComponent(Integer.parseInt(n.label.replaceAll("C", "")));

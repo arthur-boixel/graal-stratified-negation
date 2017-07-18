@@ -1,6 +1,5 @@
 package fr.lirmm.graphik;
 
-import javax.swing.text.StyledEditorKit.ItalicAction;
 
 import fr.lirmm.graphik.graal.api.core.Atom;
 import fr.lirmm.graphik.graal.api.core.InMemoryAtomSet;
@@ -62,23 +61,21 @@ public class DefaultUnifierWithNegationAlgorithm {
 			DefaultRuleWithNegation r1 = this.createImageOf(src, DefaultUnifierAlgorithm.getSourceVariablesSubstitution());
 			DefaultRuleWithNegation r2 = this.createImageOf(dest, DefaultUnifierAlgorithm.getTargetVariablesSubstitution());
 			
-			//System.out.println("test iterator existentielles : ");
+	
 			try {
 				for(CloseableIterator<Atom> itAtom = r1.getHead().iterator() ; itAtom.hasNext() ; )
 				{
 					Atom a = itAtom.next();
-					//System.out.println("Parcours terme de " + a);
+	
 					for(Term t : a.getTerms())
 					{
 						if(t.isVariable())
 						{
 							if(r1.getExistentials().contains(t))
 							{
-								System.out.println("existentielles " + t + " pour atome : " + a);
 								r1.getHead().remove(a);
 								
 								break;
-								//return false;
 							}
 						}
 					}
@@ -86,10 +83,7 @@ public class DefaultUnifierWithNegationAlgorithm {
 			} catch (IteratorException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			/*if(!r1.getExistentials().isEmpty())
-				return false;*/
-			
+			}			
 
 			r1 = this.createImageOf(r1, DefaultUnifierAlgorithm.getSourceVariablesSubstitution());
 			r2 = this.createImageOf(r2, DefaultUnifierAlgorithm.getTargetVariablesSubstitution());
@@ -188,7 +182,7 @@ public class DefaultUnifierWithNegationAlgorithm {
 			union.clear();
 			
 			
-			return (i && ii && iii && iv && v && vi);
+			return (i && ii && iii && iv && v && vi && vii);
 		}
 		
 		

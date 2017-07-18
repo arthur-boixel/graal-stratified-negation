@@ -61,15 +61,9 @@ public class DefaultGraphOfRuleDependenciesViewer {
 			{
 				for(Rule r : c)
 				{
-					System.out.println("Bad : " + r + " ||| Node : " + graphDisp.getNode(r.getLabel()));
 					graphDisp.getNode(r.getLabel()).addAttribute("ui.class", "bad");
-					System.out.println("class " + graphDisp.getNode(r.getLabel()).getAttribute("ui.class"));
 				}
 			}
-		}
-		else
-		{
-			System.out.println("No bad circuits");
 		}
 	}
 	

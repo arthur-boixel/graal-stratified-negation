@@ -18,7 +18,6 @@ import fr.lirmm.graphik.graal.kb.KBBuilder;
 import fr.lirmm.graphik.graal.api.core.Rule;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
 import org.jgrapht.alg.cycle.TarjanSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.DirectedGraph;
@@ -66,15 +65,15 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 		
 		this.nbEdges = 0;
 		if(computeDep)
+		{
 			this.computeDependencies();
 		
+			this.computeCircuits = false;
+			this.hasCircuit();
 		
-
-		this.computeCircuits = false;
-		this.hasCircuit();
-		
-		this.computeScc = false;
-		this.Scc = this.getStronglyConnectedComponentsGraph();		
+			this.computeScc = false;
+			this.Scc = this.getStronglyConnectedComponentsGraph();
+		}
 	}
 	
 	
@@ -185,6 +184,8 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 			}
 		}
 		
+		hasCircuit();
+		getStronglyConnectedComponentsGraph();
 		return subGRD;
 	}
 	
@@ -236,6 +237,9 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 		if(!computeCircuits)
 			hasCircuit();
 		
+		if(circuits.isEmpty())
+			return false;
+		
 		for(List<Rule> c : circuits)
 		{
 			if(containsNegativeEdge(c))
@@ -278,25 +282,25 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 		return false;
 	}
 	
-	public Iterable<DefaultDirectedLabeledEdge> getBadEdges(List<Rule> circuit)
+	public Iterable<DefaultDirectedLabeledEdge> getBadEdges(List<Rule> c)
 	{
 		ArrayList<DefaultDirectedLabeledEdge> l = new ArrayList<>();
 		
-		for(int i = 0 ; i < circuit.size()-1 ; i++) { // Following the circuit
+		for(int i = 0 ; i < c.size()-1 ; i++) { // Following the circuit
 			
-			for(DefaultDirectedLabeledEdge e : this.graph.outgoingEdgesOf(circuit.get(i))) {
+			for(DefaultDirectedLabeledEdge e : this.graph.outgoingEdgesOf(c.get(i))) {
 				
-				if(e.getHead() == ((DefaultRuleWithNegation)circuit.get(i+1)).getIndice()) { // Wanted edge found
+				if(e.getHead() == ((DefaultRuleWithNegation)c.get(i+1)).getIndice()) { // Wanted edge found
 					l.add(e);					
 					break;
 				}
 			} 		
 		}
 		
-		int i = circuit.size()-1;
-		for(DefaultDirectedLabeledEdge e : this.graph.outgoingEdgesOf(circuit.get(i))) {
+		int i = c.size()-1;
+		for(DefaultDirectedLabeledEdge e : this.graph.outgoingEdgesOf(c.get(i))) {
 			
-			if(e.getHead() == ((DefaultRuleWithNegation)circuit.get(0)).getIndice()) { // Wanted edge found
+			if(e.getHead() == ((DefaultRuleWithNegation)c.get(0)).getIndice()) { // Wanted edge found
 				l.add(e);					
 				break;
 			}
@@ -315,7 +319,7 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 		if(!hasCircuitWithNegativeEdge())
 			return l;
 		
-		for(List<Rule> c : circuits)
+		for(List<Rule> c : this.circuits)
 		{
 			if(containsNegativeEdge(c))
 			{
