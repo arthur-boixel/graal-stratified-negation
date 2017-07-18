@@ -51,10 +51,12 @@ public class DefaultGraphOfRuleDependenciesViewer {
 			n.addAttribute("rule", r.toString());
 		}
 		
+		/* Colors */
 		List<List<Rule>> l = ((DefaultLabeledGraphOfRuleDependencies)g).getBadCircuits();
 		
-		if(l != null)
+		if(!l.isEmpty())
 		{
+			System.out.println("Bad circuits :  " + l.toString());
 			for(List<Rule> c : l)
 			{
 				for(Rule r : c)
@@ -64,6 +66,10 @@ public class DefaultGraphOfRuleDependenciesViewer {
 					System.out.println("class " + graphDisp.getNode(r.getLabel()).getAttribute("ui.class"));
 				}
 			}
+		}
+		else
+		{
+			System.out.println("No bad circuits");
 		}
 	}
 	
@@ -111,11 +117,10 @@ public class DefaultGraphOfRuleDependenciesViewer {
 		/* Colors on edges */
 		List<List<Rule>> l = ((DefaultLabeledGraphOfRuleDependencies)g).getBadCircuits();
 		
-		if(l != null)
+		if(!l.isEmpty())
 		{
 			for(List<Rule> c : l)
 			{
-				
 				for(DefaultDirectedLabeledEdge e : ((DefaultLabeledGraphOfRuleDependencies)g).getBadEdges(c))
 				{
 					if(graphDisp.getEdge(e.getFirst() + "|" + e.getSecond()).getAttribute("ui.class").toString().compareTo("moins") == 0)

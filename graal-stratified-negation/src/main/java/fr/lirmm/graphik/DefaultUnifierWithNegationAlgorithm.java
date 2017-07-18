@@ -1,13 +1,18 @@
 package fr.lirmm.graphik;
 
+import javax.swing.text.StyledEditorKit.ItalicAction;
+
 import fr.lirmm.graphik.graal.api.core.Atom;
 import fr.lirmm.graphik.graal.api.core.InMemoryAtomSet;
 import fr.lirmm.graphik.graal.api.core.Substitution;
+import fr.lirmm.graphik.graal.api.core.Term;
 import fr.lirmm.graphik.graal.api.core.unifier.UnifierChecker;
 import fr.lirmm.graphik.graal.core.atomset.LinkedListAtomSet;
 import fr.lirmm.graphik.graal.core.unifier.DefaultUnifierAlgorithm;
 import fr.lirmm.graphik.graal.core.unifier.checker.ProductivityChecker;
+import fr.lirmm.graphik.util.stream.CloseableIterator;
 import fr.lirmm.graphik.util.stream.CloseableIteratorWithoutException;
+import fr.lirmm.graphik.util.stream.IteratorException;
 	
 
 public class DefaultUnifierWithNegationAlgorithm {
@@ -56,9 +61,34 @@ public class DefaultUnifierWithNegationAlgorithm {
 		{
 			DefaultRuleWithNegation r1 = this.createImageOf(src, DefaultUnifierAlgorithm.getSourceVariablesSubstitution());
 			DefaultRuleWithNegation r2 = this.createImageOf(dest, DefaultUnifierAlgorithm.getTargetVariablesSubstitution());
-
-			if(!r1.getExistentials().isEmpty())
-				return false;
+			
+			//System.out.println("test iterator existentielles : ");
+			try {
+				for(CloseableIterator<Atom> itAtom = r1.getHead().iterator() ; itAtom.hasNext() ; )
+				{
+					Atom a = itAtom.next();
+					//System.out.println("Parcours terme de " + a);
+					for(Term t : a.getTerms())
+					{
+						if(t.isVariable())
+						{
+							if(r1.getExistentials().contains(t))
+							{
+								System.out.println("existentielles " + t + " pour atome : " + a);
+								r1.getHead().remove(a);
+								
+								break;
+								//return false;
+							}
+						}
+					}
+				}
+			} catch (IteratorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			/*if(!r1.getExistentials().isEmpty())
+				return false;*/
 			
 
 			r1 = this.createImageOf(r1, DefaultUnifierAlgorithm.getSourceVariablesSubstitution());
@@ -94,35 +124,71 @@ public class DefaultUnifierWithNegationAlgorithm {
 		
 			InMemoryAtomSet bpj = s.createImageOf(r2.getBody());
 			InMemoryAtomSet bnj = s.createImageOf(r2.getNegativeBody());
-		
-			InMemoryAtomSet uPos = new LinkedListAtomSet();
-				uPos.addAll(bpi);
-				uPos.addAll(bpj);
-		
-			InMemoryAtomSet uNeg = new LinkedListAtomSet();
-				uNeg.addAll(bni);
-				uNeg.addAll(bnj);
-		
-			/* (i) */
-			boolean inter = hasIntersection(uPos , uNeg); // (B+1 , B+2) inter (B-1 , B-2)
 			
-			/* (ii) */
-			Atom hj = s.createImageOf(r2.getHead().iterator().next());
+			InMemoryAtomSet hi = s.createImageOf(r1.getHead());
+			InMemoryAtomSet hj = s.createImageOf(r2.getHead());
+			
+			
+			boolean i = !hasIntersection(bpi, bni);
+			
+			boolean ii = !hasIntersection(bpi, bnj);
+			
+			boolean iii = !hasIntersection(bpj, bnj);
+			
+			InMemoryAtomSet bpjBis = s.createImageOf(bpj);
+			bpjBis.removeAll(hi);
+			boolean iv = !hasIntersection(bni, bpjBis);
+			
 			InMemoryAtomSet union = new LinkedListAtomSet();
-				union.add(s.createImageOf(r1.getHead().iterator().next())); // Atomic heads
-				union.addAll(bpi);
-				union.addAll(bpj);
+			union.add(s.createImageOf(r1.getHead().iterator().next())); // Atomic heads
+			union.addAll(bpi);
+			union.addAll(bpj);
+			boolean v = false;
+			try {
+				for(CloseableIterator<Atom> itAtom = hj.iterator() ; itAtom.hasNext() ; )
+				{
+					if(!union.contains(itAtom.next()))
+					{
+						v = true;
+						break;
+					}
+				}
+			} catch (IteratorException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			boolean vi = !hasIntersection(bnj, hi);
+			
+			boolean vii = false;
+			try {
+				for(CloseableIterator<Atom> itAtom = bpj.iterator() ; itAtom.hasNext() ; )
+				{
+					if(!bpi.contains(itAtom.next()))
+					{
+						vii = true;
+						break;
+					}
+				}
+			}
+			catch (IteratorException e)
+			{
+				e.printStackTrace();
+			}
+			
+			
 			
 			bpi.clear();
 			bni.clear();
 			bpj.clear();
+			bpjBis.clear();
 			bnj.clear();
-			uPos.clear();
-			uNeg.clear();
+			hi.clear();
+			hj.clear();
 			union.clear();
 			
 			
-			return (!inter && !union.contains(hj));
+			return (i && ii && iii && iv && v && vi);
 		}
 		
 		

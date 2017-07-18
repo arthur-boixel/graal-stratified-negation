@@ -15,12 +15,14 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.swing.Box;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -96,8 +98,8 @@ public class Window extends JFrame {
 
 		/* Initialize the Menu */
 		menu = new JMenuBar();
-		menu.setPreferredSize(new Dimension(1024,30));
-		menu.setMaximumSize(new Dimension(1024,30));
+		menu.setPreferredSize(new Dimension(360,30));
+		menu.setMaximumSize(new Dimension(360,30));
 		menu.setLayout(new GridLayout(1,6));
 		menu.setVisible(true);
 
@@ -140,7 +142,7 @@ public class Window extends JFrame {
 		});
 
 		toolMenu.add(rulesText);
-
+		
 		grdText = new JMenuItem("Print GRD");
 		grdText.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -181,6 +183,9 @@ public class Window extends JFrame {
 		});
 		toolMenu.add(forwardChaining);
 
+		toolMenu.insert("-----", 1);
+		toolMenu.insert("-----", 4);
+		toolMenu.insert("-----", 7);
 		menu.add(toolMenu);
 
 
@@ -222,9 +227,16 @@ public class Window extends JFrame {
 		});
 		saveMenu.add(saveFC);
 		
+		saveMenu.insert("-----", 1);
+		saveMenu.insert("-----", 3);
+		saveMenu.insert("-----", 5);
 		
 		menu.add(saveMenu);
 
+		menu.add(Box.createHorizontalGlue());
+		menu.add(Box.createHorizontalGlue());
+		menu.add(Box.createHorizontalGlue());
+		
 
 		/* Initialize the info zone */
 
@@ -325,6 +337,8 @@ public class Window extends JFrame {
 	{
 		if(this.grd != null)
 		{
+			this.clearDrawZone();
+			
 			this.infoNode.setText("Rules : " + grd.getNodeCount());
 			this.displayZone.setText(this.getRulesText());
 			this.displayZone.setCaretPosition(0);
@@ -620,11 +634,7 @@ public class Window extends JFrame {
 			}
 			else
 			{
-				this.infoNode.setText(this.infoNode.getText() + " | Impossible, the rules are not stratifiable");
-				
-				this.pack();
-				
-				
+				JOptionPane.showMessageDialog(this, "Impossible, the rules are not stratifiable", "Impossible" , JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -757,11 +767,7 @@ public class Window extends JFrame {
 			}
 			else
 			{
-				this.infoNode.setText(this.infoNode.getText() + " | Impossible, the rules are not stratifiable");
-				
-				this.pack();
-				
-				
+				JOptionPane.showMessageDialog(this, "Impossible, the rules are not stratifiable", "Impossible" , JOptionPane.ERROR_MESSAGE);				
 			}
 		}
 	}

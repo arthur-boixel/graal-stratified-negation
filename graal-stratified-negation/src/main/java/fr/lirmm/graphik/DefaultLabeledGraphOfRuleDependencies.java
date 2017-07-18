@@ -19,6 +19,7 @@ import fr.lirmm.graphik.graal.api.core.Rule;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.alg.cycle.SzwarcfiterLauerSimpleCycles;
+import org.jgrapht.alg.cycle.TarjanSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.DirectedGraph;
 
@@ -51,16 +52,10 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 	}
 	
 	public DefaultLabeledGraphOfRuleDependencies(Iterable<Rule> rules , boolean computeDep) {
-		System.out.println("###");
+
 		this.graph = new DefaultDirectedGraph<Rule, DefaultDirectedLabeledEdge>(DefaultDirectedLabeledEdge.class);
 				
 		this.rules = rules;
-		
-		this.computeCircuits = false;
-		this.circuits = new ArrayList<List<Rule>>();
-		
-		this.computeScc = false;
-		this.Scc = new StronglyConnectedComponentsGraph<Rule>();
 		
 		this.nbNodes = 0;
 		for(Rule r : rules)
@@ -73,6 +68,13 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 		if(computeDep)
 			this.computeDependencies();
 		
+		
+
+		this.computeCircuits = false;
+		this.hasCircuit();
+		
+		this.computeScc = false;
+		this.Scc = this.getStronglyConnectedComponentsGraph();		
 	}
 	
 	
@@ -215,9 +217,9 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 	public boolean hasCircuit() {
 		
 		if(!computeCircuits) {
-			
-			SzwarcfiterLauerSimpleCycles<Rule,DefaultDirectedLabeledEdge> inspector =
-				new SzwarcfiterLauerSimpleCycles<Rule, DefaultDirectedLabeledEdge>(this.graph);
+			TarjanSimpleCycles<Rule,DefaultDirectedLabeledEdge> inspector = new TarjanSimpleCycles<>(this.graph);
+			/*SzwarcfiterLauerSimpleCycles<Rule,DefaultDirectedLabeledEdge> inspector =
+				new SzwarcfiterLauerSimpleCycles<Rule, DefaultDirectedLabeledEdge>(this.graph);*/
 		
 			
 			this.circuits = inspector.findSimpleCycles();
@@ -261,6 +263,18 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 			} 		
 		}
 		
+		int i = circuit.size()-1;
+		for(DefaultDirectedLabeledEdge e : this.graph.outgoingEdgesOf(circuit.get(i))) {
+			
+			if(e.getHead() == ((DefaultRuleWithNegation)circuit.get(0)).getIndice()) { // Wanted edge found
+				
+				if(e.getLabel() == '-')
+					return true;
+				
+				break;
+			}
+		} 		
+		
 		return false;
 	}
 	
@@ -295,9 +309,11 @@ public class DefaultLabeledGraphOfRuleDependencies implements GraphOfRuleDepende
 	{
 		ArrayList<List<Rule>> l = new ArrayList<>();
 		
-		hasCircuit();
+		if(!hasCircuit())
+			return l;
+		
 		if(!hasCircuitWithNegativeEdge())
-			return null;
+			return l;
 		
 		for(List<Rule> c : circuits)
 		{
