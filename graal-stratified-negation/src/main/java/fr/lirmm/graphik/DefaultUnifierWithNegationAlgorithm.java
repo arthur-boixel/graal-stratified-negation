@@ -134,16 +134,16 @@ public class DefaultUnifierWithNegationAlgorithm {
 			boolean iv = !hasIntersection(bni, bpjBis);
 			
 			InMemoryAtomSet union = new LinkedListAtomSet();
-			union.add(s.createImageOf(r1.getHead().iterator().next())); // Atomic heads
+			union.addAll(hi); // Atomic heads
 			union.addAll(bpi);
 			union.addAll(bpj);
-			boolean v = false;
+			boolean v = true;
 			try {
 				for(CloseableIterator<Atom> itAtom = hj.iterator() ; itAtom.hasNext() ; )
 				{
-					if(!union.contains(itAtom.next()))
+					if(union.contains(itAtom.next()))
 					{
-						v = true;
+						v = false;
 						break;
 					}
 				}
@@ -154,13 +154,13 @@ public class DefaultUnifierWithNegationAlgorithm {
 			
 			boolean vi = !hasIntersection(bnj, hi);
 			
-			boolean vii = false;
+			boolean vii = true;
 			try {
 				for(CloseableIterator<Atom> itAtom = bpj.iterator() ; itAtom.hasNext() ; )
 				{
-					if(!bpi.contains(itAtom.next()))
+					if(bpi.contains(itAtom.next()))
 					{
-						vii = true;
+						vii = false;
 						break;
 					}
 				}
