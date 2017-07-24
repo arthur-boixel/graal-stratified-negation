@@ -38,6 +38,7 @@ import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 
 import fr.lirmm.graphik.graal.api.core.AtomSet;
+import fr.lirmm.graphik.graal.api.core.GraphOfRuleDependencies;
 import fr.lirmm.graphik.graal.api.core.Rule;
 import fr.lirmm.graphik.graal.api.forward_chaining.ChaseException;
 import fr.lirmm.graphik.graal.api.kb.KnowledgeBase;
@@ -265,12 +266,12 @@ public class Window extends JFrame {
 		this.displayZone = new JTextArea();
 	}
 
-	public Window(DefaultLabeledGraphOfRuleDependencies g , boolean master)
+	public Window(GraphOfRuleDependencies graphOfRuleDependencies , boolean master)
 	{
 		/* Initialize the Window */
 		this(master);
 
-		this.grd = g;
+		this.grd = (DefaultLabeledGraphOfRuleDependencies) graphOfRuleDependencies;
 		this.grdDisp = null;
 		this.scc = this.grd.getStronglyConnectedComponentsGraph();
 		this.sccDisp = null;
@@ -278,9 +279,6 @@ public class Window extends JFrame {
 		this.infoNode.setText("Ready\n");
 		
 		displayGRD();
-		pack();
-		setVisible(true);
-		setLocationRelativeTo(null);
 	}
 
 
@@ -342,6 +340,7 @@ public class Window extends JFrame {
 			this.infoNode.setText("Rules : " + grd.getNodeCount());
 			this.displayZone.setText(this.getRulesText());
 			this.displayZone.setCaretPosition(0);
+			this.displayZone.setEditable(false);
 			this.scroll = new JScrollPane(this.displayZone);
 			this.add(this.scroll , BorderLayout.CENTER);
 			this.pack();
@@ -383,8 +382,13 @@ public class Window extends JFrame {
 			clearDrawZone();
 			
 			this.infoNode.setText("Rules : " + grd.getNodeCount() + " | Edges : " + grd.getEdgeCount());
+			if(grd.hasCircuitWithNegativeEdge())
+				this.infoNode.setText(this.infoNode.getText() + " | Not stratifiable");
+			else
+				this.infoNode.setText(this.infoNode.getText() + " | Stratifiable");
 			this.displayZone.setText(this.getGRDText());
 			this.displayZone.setCaretPosition(0);
+			this.displayZone.setEditable(false);
 			this.scroll = new JScrollPane(this.displayZone);
 			this.add(this.scroll , BorderLayout.CENTER);
 			this.pack();
@@ -421,7 +425,7 @@ public class Window extends JFrame {
 					if(n != null)
 					{
 						System.out.println("Node : " + n.label);
-						infoNode.setText(grdDisp.getNode(n.label).getAttribute("rule") + "Class : " + grdDisp.getNode(n.label).getAttribute("ui.class"));
+						infoNode.setText(grdDisp.getNode(n.label).getAttribute("rule"));
 					}
 					else
 					{
@@ -518,12 +522,17 @@ public class Window extends JFrame {
 			if(this.sccDisp == null)
 				this.sccDisp = DefaultGraphOfRuleDependenciesViewer.instance().getSCCGraph(this.grd);
 			this.infoNode.setText("Strongly Connected Components : " + sccDisp.getNodeCount() + " | Edges : " + sccDisp.getEdgeCount());
-			
-			
+			if(grd.hasCircuitWithNegativeEdge())
+				this.infoNode.setText(this.infoNode.getText() + " | Not stratifiable");
+			else
+				this.infoNode.setText(this.infoNode.getText() + " | Stratifiable");
 			this.clearDrawZone();
 			this.displayZone.setText(this.getSCCText() + this.getGSCCText());
 			this.displayZone.setCaretPosition(0);
+			this.displayZone.setEditable(false);
 			this.scroll = new JScrollPane(this.displayZone);
+		
+			
 			this.add(this.scroll , BorderLayout.CENTER);
 			this.pack();
 		}
@@ -566,7 +575,7 @@ public class Window extends JFrame {
 						Set<Rule> s = scc.getComponent(Integer.parseInt(n.label.replaceAll("C", "")));
 						System.out.println(s);
 						
-						new Window((DefaultLabeledGraphOfRuleDependencies)((DefaultLabeledGraphOfRuleDependencies)grd).getSubGraph(s) , false);
+						new Window(grd.getSubGraph(s) , false);
 					}
 					else
 						infoNode.setText("Strongly Connected Components : " + sccDisp.getNodeCount() + " | Edges : " + sccDisp.getEdgeCount());
