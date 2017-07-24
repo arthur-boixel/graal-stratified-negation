@@ -41,10 +41,8 @@ public class DefaultUnifierWithNegationAlgorithm {
 			CloseableIteratorWithoutException<Substitution> sigmas = 
 					DefaultUnifierAlgorithm.instance().computePieceUnifier(r1, r2, ProductivityChecker.instance()); // Compute Piece unifiers
 			
-			for( ; sigmas.hasNext() ; ) {
-				Substitution s = sigmas.next();
-
-				if(isValidPositiveUnifier(r1, r2, s)) {
+			while(sigmas.hasNext()) {
+				if(isValidPositiveUnifier(r1, r2, sigmas.next())) {
 					sigmas.close();
 					return true;
 				}
@@ -91,7 +89,7 @@ public class DefaultUnifierWithNegationAlgorithm {
 			CloseableIteratorWithoutException<Substitution> sigmas = 
 					DefaultUnifierAlgorithm.instance().computePieceUnifier(r1, r2.getNegativeBody(), tab); // Compute Piece unifiers
 			
-			for( ; sigmas.hasNext() ; ) {
+			while(sigmas.hasNext()) {
 				
 				if(isValidNegativeUnifier(r1, r2, sigmas.next())) {
 					sigmas.close();
