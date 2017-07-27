@@ -1,5 +1,5 @@
 # graal-stratified-negation
-A Java Tool to visualize Graph of Rules Dependencies, compute stratification and saturate a fact base composed of existential rules with default negation.
+A tool to compute and visualize the Graph of Rules Dependencies of an ontology composed of existential rules with default negation. It can compute a stratification if the rule base is stratifiable and apply forward chaining on a given fact base.
 
 # How to Use
 ## Command Line
