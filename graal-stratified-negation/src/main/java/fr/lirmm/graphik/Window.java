@@ -80,7 +80,6 @@ public class Window extends JFrame {
 	StronglyConnectedComponentsGraph<Rule> scc;
 	Graph sccDisp;
 	
-	SccChase<AtomSet> chase;
 
 	private boolean master;
 
@@ -299,14 +298,22 @@ public class Window extends JFrame {
 		{	
 			this.clearDrawZone();
 			
-			this.infoNode.setText("Computing dependencies for " + c.getSelectedFile().getName() + " (this may take a while)...");
-			
+			this.infoNode.setText("Computing...");
+			this.displayZone.setText("Computing dependencies for " + c.getSelectedFile().getName() + " (this may take a while)...");
+			this.displayZone.setCaretPosition(0);
+			this.displayZone.setEditable(false);
+			this.scroll = new JScrollPane(this.displayZone);
+			this.add(this.scroll , BorderLayout.CENTER);
+		
+			this.pack();
 			this.grd = new DefaultLabeledGraphOfRuleDependencies(c.getSelectedFile());
 			this.grdDisp = null;
 			this.scc = this.grd.getStronglyConnectedComponentsGraph();
 			this.sccDisp = null;
 			
-			this.infoNode.setText(this.displayZone.getText() + "Ready\n");
+			this.infoNode.setText("Ready\n");
+
+			this.pack();
 		}
 	}
 
@@ -319,10 +326,10 @@ public class Window extends JFrame {
 	}
 
 
-	public String getRulesText()
+	public static String getRulesText(Iterable<Rule> rules)
 	{
-		StringBuffer s = new StringBuffer("== Rule Base ==\n");
-		for(Rule r : this.grd.getRules())
+		StringBuffer s = new StringBuffer("====== RULE SET ======\n");
+		for(Rule r : rules)
 		{
 			s.append(r.toString());
 			s.append('\n');
@@ -338,7 +345,7 @@ public class Window extends JFrame {
 			this.clearDrawZone();
 			
 			this.infoNode.setText("Rules : " + grd.getNodeCount());
-			this.displayZone.setText(this.getRulesText());
+			this.displayZone.setText(Window.getRulesText(grd.getRules()));
 			this.displayZone.setCaretPosition(0);
 			this.displayZone.setEditable(false);
 			this.scroll = new JScrollPane(this.displayZone);
@@ -348,13 +355,13 @@ public class Window extends JFrame {
 	}
 
 
-	public String getGRDText()
+	public static String getGRDText(DefaultLabeledGraphOfRuleDependencies grd)
 	{
-		StringBuffer s = new StringBuffer("== Graph of Rule Dependencies ==\n");
+		StringBuffer s = new StringBuffer("======== GRD =========\n");
 
-		for(Rule r1 : this.grd.getRules())
+		for(Rule r1 : grd.getRules())
 		{
-			for(Rule r2 : this.grd.getTriggeredRules(r1))
+			for(Rule r2 : grd.getTriggeredRules(r1))
 			{
 				s.append("[");
 				s.append(r1.getLabel());
@@ -362,7 +369,7 @@ public class Window extends JFrame {
 				s.append(r2.getLabel());
 				s.append("]\n");
 			}
-			for(Rule r2 : this.grd.getInhibitedRules(r1))
+			for(Rule r2 : grd.getInhibitedRules(r1))
 			{
 				s.append("[");
 				s.append(r1.getLabel());
@@ -386,7 +393,7 @@ public class Window extends JFrame {
 				this.infoNode.setText(this.infoNode.getText() + " | Not stratifiable");
 			else
 				this.infoNode.setText(this.infoNode.getText() + " | Stratifiable");
-			this.displayZone.setText(this.getGRDText());
+			this.displayZone.setText(Window.getGRDText(grd));
 			this.displayZone.setCaretPosition(0);
 			this.displayZone.setEditable(false);
 			this.scroll = new JScrollPane(this.displayZone);
@@ -465,15 +472,15 @@ public class Window extends JFrame {
 	}
 
 
-	public String getSCCText()
+	public static String getSCCText(StronglyConnectedComponentsGraph<Rule> scc)
 	{
-		StringBuffer s = new StringBuffer("== Strongly Connected Components ==\n");
+		StringBuffer s = new StringBuffer("======== SCC =========\n");
 
-		for(int i = 0 ; i < this.scc.getNbrComponents() ; i++)
+		for(int i = 0 ; i < scc.getNbrComponents() ; i++)
 		{
 			boolean first = true;
 			s.append("C" + i + " = {");
-			for(Rule r : this.scc.getComponent(i))
+			for(Rule r : scc.getComponent(i))
 			{
 				if(first)
 					first = false;
@@ -487,9 +494,9 @@ public class Window extends JFrame {
 		return s.toString();
 	}
 
-	public String getGSCCText()
+	public static String getGSCCText(Graph sccDisp)
 	{
-		StringBuffer s = new StringBuffer("== Graph of Strongly Connected Components ==\n");
+		StringBuffer s = new StringBuffer("======== SCC GRAPH =========\n");
 
 		for(Iterator<Node> itNode = sccDisp.getNodeIterator() ; itNode.hasNext() ;)
 		{
@@ -516,7 +523,7 @@ public class Window extends JFrame {
 
 	public void printSCC()
 	{
-		System.out.println(this.getSCCText());
+		System.out.println(Window.getSCCText(this.scc));
 		if(this.grd != null)
 		{
 			if(this.sccDisp == null)
@@ -527,7 +534,7 @@ public class Window extends JFrame {
 			else
 				this.infoNode.setText(this.infoNode.getText() + " | Stratifiable");
 			this.clearDrawZone();
-			this.displayZone.setText(this.getSCCText() + this.getGSCCText());
+			this.displayZone.setText(Window.getSCCText(this.scc) + Window.getGSCCText(this.sccDisp));
 			this.displayZone.setCaretPosition(0);
 			this.displayZone.setEditable(false);
 			this.scroll = new JScrollPane(this.displayZone);
@@ -609,6 +616,25 @@ public class Window extends JFrame {
 	}
 
 	
+	public static String getSaturation(String src , DefaultLabeledGraphOfRuleDependencies grd)
+	{
+		KBBuilder kbb = new KBBuilder();
+		Utils.readKB(kbb, null, src);
+	
+		KnowledgeBase kb = kbb.build();
+		
+
+		SccChase<AtomSet> chase = new SccChase<AtomSet>(grd , kb.getFacts());
+		try {
+			chase.execute();
+		} catch (ChaseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return Utils.displayFacts(kb.getFacts());
+	}
+	
 	public void launchForwardChaining()
 	{
 		if(this.grd != null)
@@ -624,21 +650,7 @@ public class Window extends JFrame {
 				if(returnVal == JFileChooser.APPROVE_OPTION)
 				{	
 					this.clearDrawZone();
-				
-					KBBuilder kbb = new KBBuilder();
-					Utils.readKB(kbb, null, c.getSelectedFile().getAbsolutePath());
-				
-					KnowledgeBase kb = kbb.build();
-					System.out.println("Before : " + kb.getFacts());
-					this.chase = new SccChase<AtomSet>(grd, kb.getFacts());
-					try {
-						this.chase.execute();
-					} catch (ChaseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-					this.displayZone.setText(Utils.displayFacts(kb.getFacts()));
+					this.displayZone.setText(Window.getSaturation(c.getName(), grd));
 					this.displayZone.setCaretPosition(0);
 					this.scroll = new JScrollPane(this.displayZone);
 					this.add(this.scroll , BorderLayout.CENTER);
@@ -666,7 +678,7 @@ public class Window extends JFrame {
 			{	
 				try {
 					FileWriter fw = new FileWriter(c.getSelectedFile());
-					fw.write(this.getRulesText());
+					fw.write(Window.getRulesText(grd.getRules()));
 					fw.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -691,7 +703,7 @@ public class Window extends JFrame {
 			{	
 				try {
 					FileWriter fw = new FileWriter(c.getSelectedFile());
-					fw.write(this.getGRDText());
+					fw.write(Window.getGRDText(grd));
 					fw.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -720,8 +732,8 @@ public class Window extends JFrame {
 			{	
 				try {
 					FileWriter fw = new FileWriter(c.getSelectedFile());
-					fw.write(this.getSCCText());
-					fw.write(this.getGSCCText());
+					fw.write(Window.getSCCText(this.scc));
+					fw.write(Window.getGSCCText(this.sccDisp));
 					fw.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -746,19 +758,6 @@ public class Window extends JFrame {
 
 				if(returnVal == JFileChooser.APPROVE_OPTION)
 				{	
-					KBBuilder kbb = new KBBuilder();
-					Utils.readKB(kbb, null, c.getSelectedFile().getAbsolutePath());
-				
-					KnowledgeBase kb = kbb.build();
-					System.out.println("Before : " + kb.getFacts());
-					this.chase = new SccChase<AtomSet>(grd, kb.getFacts());
-					try {
-						this.chase.execute();
-					} catch (ChaseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
 					/* Exportation */
 					c = new JFileChooser(".");
 					c.setFileFilter(filter);
@@ -769,7 +768,7 @@ public class Window extends JFrame {
 					{	
 						try {
 							FileWriter fw = new FileWriter(c.getSelectedFile());
-							fw.write(Utils.displayFacts(kb.getFacts()));
+							fw.write(Window.getSaturation(c.getName(), grd));
 							fw.close();
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
