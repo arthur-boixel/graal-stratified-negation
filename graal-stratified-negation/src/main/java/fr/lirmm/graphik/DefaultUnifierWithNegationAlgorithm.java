@@ -40,14 +40,13 @@ public class DefaultUnifierWithNegationAlgorithm {
 
 			CloseableIteratorWithoutException<Substitution> sigmas = 
 					DefaultUnifierAlgorithm.instance().computePieceUnifier(r1, r2, ProductivityChecker.instance()); // Compute Piece unifiers
-			
 			while(sigmas.hasNext()) {
 				if(isValidPositiveUnifier(r1, r2, sigmas.next())) {
 					sigmas.close();
 					return true;
 				}
 			}
-				
+			
 			sigmas.close();
 			
 			return false;
@@ -56,35 +55,39 @@ public class DefaultUnifierWithNegationAlgorithm {
 		
 		public boolean existNegativeDependency(DefaultRuleWithNegation src , DefaultRuleWithNegation dest)
 		{
-			DefaultRuleWithNegation r1 = this.createImageOf(src, DefaultUnifierAlgorithm.getSourceVariablesSubstitution());
-			DefaultRuleWithNegation r2 = this.createImageOf(dest, DefaultUnifierAlgorithm.getTargetVariablesSubstitution());
+			LinkedListAtomSet r1Head = new LinkedListAtomSet();
+			//DefaultRuleWithNegation r1Bis = new DefaultRuleWithNegation(src.getLabel() , src.getBody() , src.getNegativeBody() , src.getHead());
 			
-	
+			boolean add;
 			try {
-				for(CloseableIterator<Atom> itAtom = r1.getHead().iterator() ; itAtom.hasNext() ; )
+				for(CloseableIterator<Atom> itAtom = src.getHead().iterator() ; itAtom.hasNext() ; )
 				{
 					Atom a = itAtom.next();
-	
+					add = true;
 					for(Term t : a.getTerms())
 					{
 						if(t.isVariable())
 						{
-							if(r1.getExistentials().contains(t))
+							if(src.getExistentials().contains(t))
 							{
-								r1.getHead().remove(a);
-								
+								add = false;
 								break;
 							}
 						}
 					}
+					
+					if(add)
+						r1Head.add(a);
 				}
 			} catch (IteratorException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}			
-
-			r1 = this.createImageOf(r1, DefaultUnifierAlgorithm.getSourceVariablesSubstitution());
-			r2 = this.createImageOf(r2, DefaultUnifierAlgorithm.getTargetVariablesSubstitution());
+			
+			DefaultRuleWithNegation srcBis = new DefaultRuleWithNegation(src.getLabel(), src.getBody() , src.getNegativeBody() , r1Head);
+			
+			DefaultRuleWithNegation r1 = this.createImageOf(srcBis, DefaultUnifierAlgorithm.getSourceVariablesSubstitution());
+			DefaultRuleWithNegation r2 = this.createImageOf(dest, DefaultUnifierAlgorithm.getTargetVariablesSubstitution());
 			
 			CloseableIteratorWithoutException<Substitution> sigmas = 
 					DefaultUnifierAlgorithm.instance().computePieceUnifier(r1, r2.getNegativeBody(), tab); // Compute Piece unifiers
