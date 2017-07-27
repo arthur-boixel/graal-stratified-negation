@@ -1,2 +1,51 @@
 # graal-stratified-negation
-A Java Tool to visualize Graph of Rules Dependencies, compute stratification and saturate a fact base for existential rules with default negation
+A Java Tool to visualize Graph of Rules Dependencies, compute stratification and saturate a fact base composed of existential rules with default negation.
+
+# How to Use
+## Command Line
+Classical usage :
+```java -jar graal-stratified-negation.jar [options]```
+List of supported options : 
+- -f, --input-file
+ Rule set input file.
+ Default: -
+- -r, --rule-set
+  Print the rule set.
+  Default: false
+- -g, --grd
+ Print the Graph of Rule Dependencies.
+ Default: false
+- -s, --print-scc
+  Print the Strongly Connected Components.
+  Default: false
+- -G, --print-gscc
+  Print the graph of the GRD Strongly Connected Components.
+  Default: false
+- -c, --forward-chaining
+ Apply forward chaining on the specified Fact Base.
+ Default: -
+- -h, --help
+ Print this message.
+ Default: false
+  -v, --version
+  Print version information
+Default: false
+- -w, --window
+  Launch the GUI.
+  Default: false
+                
+## Graphical User Interface
+To launch the GUI use :
+```java -jar graal-stratified-negation.jar -w```
+The Graphical User Interface provides the same functionalities as the command line usage, even more.
+- Some colors :
+* Green : the green color (on a rule or a strongly connected component) means that everything is OK
+* Red : the red color means that there is a problem and the Ontology can not be stratified
+    - On a rule : the rule belongs to a circuit wich contains a negative reliance
+    - On a strongly connected component : the strongly connected component is a circuit wich contains a negative reliance
+-While displaying the Graph of Strongly Connected Components, clicking on a strongly connected component will open a new window with the Graph Of Rule Dependencies associated to it.
+- You can export an ontology in DLGP format
+- You can export a saturated fact base in DLGP format
+- You can export both the Graph of Rule Dependencies and the Graph of the Strongly Connected Components
+
+:warning: Due to theoritical limitations, computation of the dependencies between rules may take some time on big ontologies.
