@@ -8,6 +8,9 @@ import org.graphstream.graph.Graph;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 
+import fr.lirmm.graphik.graal.api.kb.KnowledgeBase;
+import fr.lirmm.graphik.graal.api.store.Store;
+import fr.lirmm.graphik.graal.kb.KBBuilder;
 import fr.lirmm.graphik.graal.rulesetanalyser.RuleSetPropertyHierarchy;
 import fr.lirmm.graphik.graal.rulesetanalyser.property.RuleSetProperty;
 
@@ -53,8 +56,7 @@ public class App {
 		} else {
 
 			// init GRD
-			DefaultLabeledGraphOfRuleDependencies grd = new DefaultLabeledGraphOfRuleDependencies(
-					new File(options.input_filepath));
+			DefaultLabeledGraphOfRuleDependencies grd = new DefaultLabeledGraphOfRuleDependencies(new File(options.input_filepath));
 
 			if (options.print_ruleset) {
 				String s = Window.getRulesText(grd.getRules());
@@ -84,6 +86,7 @@ public class App {
 				System.out.println("STRATIFIABLE =====");
 
 				if (options.facts_filepath.compareTo("-") != 0) {
+					KBBuilder kbb = new KBBuilder();
 					String s = Window.getSaturation(options.facts_filepath, grd);
 					System.out.println(s);
 				}
@@ -113,20 +116,20 @@ public class App {
 	private boolean print_gscc = false;
 
 	@Parameter(names = { "-r",
-			"--rule-set" }, description = "Print the rule set (can be useful if some rules were not labelled in the input file).")
+			"--rule-set" }, description = "Print the rule set.")
 	private boolean print_ruleset = false;
 
 	@Parameter(names = { "-c",
-			"--forward-chaining" }, description = "apply forward chaining on the speicified Fact Base.")
+			"--forward-chaining" }, description = "Apply forward chaining on the specified Fact Base.")
 	private String facts_filepath = "-";
 
-	@Parameter(names = { "-w", "--window" }, description = "Launch the GUI")
+	@Parameter(names = { "-w", "--window" }, description = "Launch the GUI.")
 	private boolean gui = false;
 
 	@Parameter(names = { "-h", "--help" }, description = "Print this message.")
 	private boolean help = false;
 
-	@Parameter(names = { "-V", "--version" }, description = "Print version information")
+	@Parameter(names = { "-v", "--version" }, description = "Print version information")
 	private boolean version = false;
 
 }
