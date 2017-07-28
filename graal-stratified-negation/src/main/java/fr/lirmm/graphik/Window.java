@@ -637,8 +637,7 @@ public class Window extends JFrame {
 		Utils.readKB(kbb, null, src);
 	
 		KnowledgeBase kb = kbb.build();
-		System.out.println("Facts : " + kb.getFacts());
-/*
+		
 		SccChase<AtomSet> chase = new SccChase<AtomSet>(grd , kb.getFacts());
 		try {
 			chase.execute();
@@ -646,7 +645,7 @@ public class Window extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
+		
 		return Utils.displayFacts(kb.getFacts());
 	}
 	
@@ -665,7 +664,6 @@ public class Window extends JFrame {
 				if(returnVal == JFileChooser.APPROVE_OPTION)
 				{	
 					this.clearDrawZone();
-					System.out.println("Name :" + c.getSelectedFile().getPath());
 					this.displayZone.setText(Window.getSaturationFromFile(c.getSelectedFile().getPath(), grd));
 					this.displayZone.setCaretPosition(0);
 					this.scroll = new JScrollPane(this.displayZone);
