@@ -59,7 +59,9 @@ public class Window extends JFrame {
 	JMenuItem grdVisu;
 	JMenuItem sccText;
 	JMenuItem sccVisu;
-	JMenuItem forwardChaining;
+	JMenu forwardChaining;
+	JMenuItem fcFromFile;
+	JMenuItem fcFromDB;
 	JMenu saveMenu;
 	JMenuItem saveRules;
 	JMenuItem saveGRD;
@@ -115,7 +117,8 @@ public class Window extends JFrame {
 			}
 		});
 		fileMenu.add(chooser);
-
+		
+		
 		quit = new JMenuItem("Quit");
 		quit.setMaximumSize(new Dimension(120, 30));
 		quit.addActionListener(new ActionListener() {
@@ -175,12 +178,24 @@ public class Window extends JFrame {
 		});
 		toolMenu.add(sccVisu);
 		
-		forwardChaining = new JMenuItem("Forward Chaining");
-		forwardChaining.addActionListener(new ActionListener() {
+		forwardChaining = new JMenu("Forward Chaining");
+		
+		fcFromFile = new JMenuItem("From file");
+		fcFromFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				launchForwardChaining();
+				launchForwardChainingFromFile();
 			}
 		});
+		forwardChaining.add(fcFromFile);
+		
+		fcFromDB = new JMenuItem("From DataBase");
+		fcFromDB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		forwardChaining.add(fcFromDB);
+		
 		toolMenu.add(forwardChaining);
 
 		toolMenu.insert("-----", 1);
@@ -616,7 +631,7 @@ public class Window extends JFrame {
 	}
 
 	
-	public static String getSaturation(String src , DefaultLabeledGraphOfRuleDependencies grd)
+	public static String getSaturationFromFile(String src , DefaultLabeledGraphOfRuleDependencies grd)
 	{
 		KBBuilder kbb = new KBBuilder();
 		Utils.readKB(kbb, null, src);
@@ -635,7 +650,7 @@ public class Window extends JFrame {
 		return Utils.displayFacts(kb.getFacts());
 	}
 	
-	public void launchForwardChaining()
+	public void launchForwardChainingFromFile()
 	{
 		if(this.grd != null)
 		{
@@ -650,7 +665,7 @@ public class Window extends JFrame {
 				if(returnVal == JFileChooser.APPROVE_OPTION)
 				{	
 					this.clearDrawZone();
-					this.displayZone.setText(Window.getSaturation(c.getName(), grd));
+					this.displayZone.setText(Window.getSaturationFromFile(c.getName(), grd));
 					this.displayZone.setCaretPosition(0);
 					this.scroll = new JScrollPane(this.displayZone);
 					this.add(this.scroll , BorderLayout.CENTER);
@@ -662,8 +677,8 @@ public class Window extends JFrame {
 				JOptionPane.showMessageDialog(this, "Impossible, the rules are not stratifiable", "Impossible" , JOptionPane.ERROR_MESSAGE);
 			}
 		}
-	}
-
+	}	
+	
 	public void exportRules()
 	{
 		if(this.grd != null)
@@ -768,7 +783,7 @@ public class Window extends JFrame {
 					{	
 						try {
 							FileWriter fw = new FileWriter(c.getSelectedFile());
-							fw.write(Window.getSaturation(c.getName(), grd));
+							fw.write(Window.getSaturationFromFile(c.getName(), grd));
 							fw.close();
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
