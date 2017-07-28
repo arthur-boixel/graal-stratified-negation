@@ -8,28 +8,28 @@ Classical usage :
 ```java -jar graal-stratified-negation.jar [options]```
 
 List of supported options : 
-- -f, --input-file
+- `-f`, `--input-file`
  Rule set input file.
  Default: -
-- -r, --rule-set
+- `-r`, `--rule-set`
   Print the rule set.
   Default: false
-- -g, --grd
+- `-g`, `--grd`
  Print the Graph of Rule Dependencies.
  Default: false
-- -s, --print-scc
+- `-s`, `--print-scc`
   Print the Strongly Connected Components.
   Default: false
-- -G, --print-gscc
+- `-G`, `--print-gscc`
   Print the graph of the GRD Strongly Connected Components.
   Default: false
-- -c, --forward-chaining
+- `-c`, `--forward-chaining`
  Apply forward chaining on the specified Fact Base.
  Default: -
-- -h, --help
+- `-h`, `--help`
  Print this message.
  Default: false
-  -v, --version
+  `-v`, `--version`
   Print version information
 Default: false
 - `-w`, `--window`
@@ -41,7 +41,7 @@ To launch the GUI use :
 
 ```java -jar graal-stratified-negation.jar -w```
 
-A user manual is available in `doc/manual.pdf` The Graphical User Interface provides the same functionalities as the command line usage, even more.
+A user manual is available in `doc/manual.pdf`. The Graphical User Interface provides the same functionalities as the command line usage, even more.
 - Some colors :
     * Green : the green color (on a rule or a strongly connected component) means that everything is OK
     * Red : the red color means that there is a problem and the Ontology can not be stratified
