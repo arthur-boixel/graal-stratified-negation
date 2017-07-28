@@ -29,7 +29,7 @@ List of supported options :
 - `-h`, `--help`
   Print this message.
   Default: false
-  `-v`, `--version`
+- `-v`, `--version`
   Print version information
   Default: false
 - `-w`, `--window`
