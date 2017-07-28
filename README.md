@@ -9,14 +9,14 @@ Classical usage :
 
 List of supported options : 
 - `-f`, `--input-file`
- Rule set input file.
- Default: -
+  Rule set input file.
+  Default: -
 - `-r`, `--rule-set`
   Print the rule set.
   Default: false
 - `-g`, `--grd`
- Print the Graph of Rule Dependencies.
- Default: false
+  Print the Graph of Rule Dependencies.
+  Default: false
 - `-s`, `--print-scc`
   Print the Strongly Connected Components.
   Default: false
@@ -24,14 +24,14 @@ List of supported options :
   Print the graph of the GRD Strongly Connected Components.
   Default: false
 - `-c`, `--forward-chaining`
- Apply forward chaining on the specified Fact Base.
- Default: -
+  Apply forward chaining on the specified Fact Base.
+  Default: -
 - `-h`, `--help`
- Print this message.
- Default: false
+  Print this message.
+  Default: false
   `-v`, `--version`
   Print version information
-Default: false
+  Default: false
 - `-w`, `--window`
   Launch the GUI.
   Default: false
