@@ -4,7 +4,9 @@ A tool to compute and visualize the Graph of Rules Dependencies of an ontology c
 # How to Use
 ## Command Line
 Classical usage :
+
 ```java -jar graal-stratified-negation.jar [options]```
+
 List of supported options : 
 - -f, --input-file
  Rule set input file.
@@ -39,13 +41,19 @@ To launch the GUI use :
 ```java -jar graal-stratified-negation.jar -w```
 The Graphical User Interface provides the same functionalities as the command line usage, even more.
 - Some colors :
-* Green : the green color (on a rule or a strongly connected component) means that everything is OK
-* Red : the red color means that there is a problem and the Ontology can not be stratified
-    - On a rule : the rule belongs to a circuit wich contains a negative reliance
-    - On a strongly connected component : the strongly connected component is a circuit wich contains a negative reliance
+    * Green : the green color (on a rule or a strongly connected component) means that everything is OK
+    * Red : the red color means that there is a problem and the Ontology can not be stratified
+        - On a rule : the rule belongs to a circuit wich contains a negative reliance
+        - On a strongly connected component : the strongly connected component is a circuit wich contains a negative reliance
 -While displaying the Graph of Strongly Connected Components, clicking on a strongly connected component will open a new window with the Graph Of Rule Dependencies associated to it.
 - You can export an ontology in DLGP format
 - You can export a saturated fact base in DLGP format
 - You can export both the Graph of Rule Dependencies and the Graph of the Strongly Connected Components
 
 :warning: Due to theoritical limitations, computation of the dependencies between rules may take some time on big ontologies.
+
+# Future Features
+In order to work with bigger ontologies this tool needs some improvments :
+- [ ] Import Rules from a database
+- [ ] Import Facts from a database
+- [ ] Export saturated set of facts to a database
