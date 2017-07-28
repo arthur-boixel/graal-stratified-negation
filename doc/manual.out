@@ -1,0 +1,19 @@
+\BOOKMARK [1][-]{section.1}{Launch the GUI}{}% 1
+\BOOKMARK [1][-]{section.2}{Ontology}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Load}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Visualize}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Save}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Graph of Rule Dependencies}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Visualize}{section.3}% 7
+\BOOKMARK [3][-]{subsubsection.3.1.1}{Text}{subsection.3.1}% 8
+\BOOKMARK [3][-]{subsubsection.3.1.2}{Graphical}{subsection.3.1}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Save}{section.3}% 10
+\BOOKMARK [1][-]{section.4}{Graph of Strongly Connected Components}{}% 11
+\BOOKMARK [2][-]{subsection.4.1}{Visualize}{section.4}% 12
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Text}{subsection.4.1}% 13
+\BOOKMARK [3][-]{subsubsection.4.1.2}{Graphical}{subsection.4.1}% 14
+\BOOKMARK [2][-]{subsection.4.2}{Save}{section.4}% 15
+\BOOKMARK [1][-]{section.5}{Forward Chaining}{}% 16
+\BOOKMARK [2][-]{subsection.5.1}{Execute}{section.5}% 17
+\BOOKMARK [3][-]{subsubsection.5.1.1}{From a file}{subsection.5.1}% 18
+\BOOKMARK [2][-]{subsection.5.2}{Save}{section.5}% 19
