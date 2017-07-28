@@ -32,14 +32,16 @@ List of supported options :
   -v, --version
   Print version information
 Default: false
-- -w, --window
+- `-w`, `--window`
   Launch the GUI.
   Default: false
                 
 ## Graphical User Interface
 To launch the GUI use :
+
 ```java -jar graal-stratified-negation.jar -w```
-The Graphical User Interface provides the same functionalities as the command line usage, even more.
+
+A user manual is available in `doc/manual.pdf` The Graphical User Interface provides the same functionalities as the command line usage, even more.
 - Some colors :
     * Green : the green color (on a rule or a strongly connected component) means that everything is OK
     * Red : the red color means that there is a problem and the Ontology can not be stratified
