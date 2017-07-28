@@ -18,7 +18,7 @@ import java.util.Set;
 import javax.swing.Box;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JLabel;	
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -187,14 +187,14 @@ public class Window extends JFrame {
 			}
 		});
 		forwardChaining.add(fcFromFile);
-		
+		/*
 		fcFromDB = new JMenuItem("From DataBase");
 		fcFromDB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 			}
 		});
-		forwardChaining.add(fcFromDB);
+		forwardChaining.add(fcFromDB);*/
 		
 		toolMenu.add(forwardChaining);
 
@@ -637,8 +637,8 @@ public class Window extends JFrame {
 		Utils.readKB(kbb, null, src);
 	
 		KnowledgeBase kb = kbb.build();
-		
-
+		System.out.println("Facts : " + kb.getFacts());
+/*
 		SccChase<AtomSet> chase = new SccChase<AtomSet>(grd , kb.getFacts());
 		try {
 			chase.execute();
@@ -646,7 +646,7 @@ public class Window extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		*/
 		return Utils.displayFacts(kb.getFacts());
 	}
 	
@@ -659,13 +659,14 @@ public class Window extends JFrame {
 				JFileChooser c = new JFileChooser(".");
 				FileNameExtensionFilter filter = new FileNameExtensionFilter("DLGP files", "dlgp");
 				c.setFileFilter(filter);
-				c.setDialogTitle("Open a Facts Base");
+				c.setDialogTitle("Open a Fact Base");
 				int returnVal = c.showOpenDialog(this);
 
 				if(returnVal == JFileChooser.APPROVE_OPTION)
 				{	
 					this.clearDrawZone();
-					this.displayZone.setText(Window.getSaturationFromFile(c.getName(), grd));
+					System.out.println("Name :" + c.getSelectedFile().getPath());
+					this.displayZone.setText(Window.getSaturationFromFile(c.getSelectedFile().getPath(), grd));
 					this.displayZone.setCaretPosition(0);
 					this.scroll = new JScrollPane(this.displayZone);
 					this.add(this.scroll , BorderLayout.CENTER);

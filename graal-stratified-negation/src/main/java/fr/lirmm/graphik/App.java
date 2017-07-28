@@ -87,7 +87,7 @@ public class App {
 
 				if (options.facts_filepath.compareTo("-") != 0) {
 					KBBuilder kbb = new KBBuilder();
-					String s = Window.getSaturation(options.facts_filepath, grd);
+					String s = Window.getSaturationFromFile(options.facts_filepath, grd);
 					System.out.println(s);
 				}
 			} else {
