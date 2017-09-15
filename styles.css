@@ -1,0 +1,32 @@
+node { 
+	shape: circle; 
+	fill-color: green;
+	text-color: black; 
+	text-mode : normal; 
+	text-size : 15px;
+	stroke-mode: plain; 
+	stroke-color: green;
+	stroke-width: 2px; 
+	size-mode : fit; 
+	text-background-mode : rounded-box; 
+	text-background-color : green;
+} 
+
+node.bad { 
+	fill-color: red; 
+	stroke-color: red; 
+	text-background-color : red;
+} 
+
+edge {
+	fill-color : black;
+	text-color : black;
+}
+
+edge.bad { 
+	fill-color : red;
+}
+
+edge.moins {
+	fill-color : orange;
+}
